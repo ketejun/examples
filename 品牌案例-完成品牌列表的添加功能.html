@@ -25,7 +25,7 @@
 
 				<label for="">
 					搜索名称关键字:
-					<input type="text" class="form-control" v-model="keywords">
+					<input type="text" class="form-control" v-model="keywords" v-focus>
 				</label>
 			</div>
 		</div>
@@ -53,6 +53,28 @@
 	</div>
 
 	<script>
+		//使用Vue.directive()定义全局的指令
+		// 其中：参数1：指令的名称，注意，在定义的时候，指令的名称前面，不需要加v-前缀
+		// 但是,在调用的时候，必须在指令名称前，加上v-前缀来进行调用
+		// 参数2：是一个对象，这个对象身上，有一些指令相关的函数，这些函数可以在特定的阶段，执行相关的操作
+		Vue.directive('focus',{
+			bind:function(el) {	//每当指令绑定到元素上的时候，会立即执行这个bind函数，只执行一次
+				// 注意：在每个函数中，第一个参数，永远是el，表示被绑定了指令的那个元素，这个el参数，是一个原生的js对象
+				// 在元素刚绑定了指令的时候，还没有插入到DOM中去，这个时候，调用focus方法没有作用
+				// 因为，一个元素，只有插入DOM之后，才能获取焦点
+
+				// el.focus()
+			},
+			inserted:function(el) {	//inserted表示元素，插入到DOM中的时候，会执行inserted函数【触发一次】
+				el.focus()
+			},
+			updated:function() {	//当VNode更新的时候，会执行updated,可能会触发多次
+
+			}
+		})
+
+		//自定义全局按键修饰符
+
 		//全局过滤器，进行时间的格式化
 		Vue.filter('dateFormat', function(dateStr, pattern = "") {
 			// 根据给定的时间字符串，得到特定的时间
