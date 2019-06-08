@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>评论列表</title>
+	<script src="lib/vue-2.4.0.js"></script>
+	<link rel="stylesheet" href="lib/bootstrap-3.3.7.css">
+</head>
+<body>
+	<div id="app">
+		<cmt-box @func="loadComments"></cmt-box>
+
+		<ul class="list-group">
+			<li class="list-group-item" v-for="item in list" :key="item.id">
+				<!-- <span class="badge">ID:{{item.id}}</span> -->
+				<span class="badge">评论人:{{item.user}}</span>
+				{{item.content}}
+			</li>
+		</ul>
+	</div>
+	
+	<template id="tmpl">
+		<div>
+			<div class="form-group">
+				<label for="">评论人</label>
+				<input type="text" class="form-control" v-model="user">
+			</div>
+
+			<div class="form-group">
+				<label for="">评论内容</label>
+				<textarea class="form-control" v-model="content"></textarea>
+			</div>
+
+			<div class="form-group">
+				<input type="button" value="发表评论" class="btn btn-primary" @click="postComment">
+			</div>
+		</div>
+	</template>
+	<script>
+		var commentBox = {
+			template: '#tmpl',
+			data(){
+				return {
+					user: '',
+					content: ''
+				}
+			},
+			methods: {
+				// 发表评论
+				postComment() {
+					var comment = {id: Date.now(), user: this.user, content: this.content}
+
+					// 从localStorage中获取所有的评论
+					var list = JSON.parse(localStorage.getItem('cmts') || '[]')
+					list.unshift(comment)
+					// 重新保存最新的 评论数据
+					localStorage.setItem('cmts',JSON.stringify(list))
+
+					this.user = this.content = ''
+
+					this.$emit('func')
+				}
+			}
+		}
+		var vm = new Vue({
+			el: '#app',
+			data: {
+				list: [
+					{
+						id: Date.now(),user: '李白', content: '天生我材必有用'
+					},
+					{
+						id: Date.now(),user: '李太白', content: '劝君更饮一杯酒'
+					},
+					{
+						id: Date.now(),user: '小然', content: '柳暗花明又一村'
+					}
+				]
+			},
+			methods: {
+				loadComments(){
+					var list = JSON.parse(localStorage.getItem('cmts') || '[]')
+					this.list = list
+				}
+			},
+			components: {
+				'cmt-box': commentBox
+			},
+			beforeCreate(){},
+			created(){
+				this.loadComments()
+			}
+		})
+	</script>
+</body>
+</html>
